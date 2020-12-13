@@ -1,0 +1,35 @@
+# `zola`-based static site
+# https://www.getzola.org/
+
+# The URL the site will be built for
+base_url = "https://phrohdoh.com"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+
+# ./themes/<dir-name>
+theme = "zerm"
+
+[extra] # put all your custom variables here
+logo_text = "phrohdoh.com"
+copyright_holding_entity = "taryn"
+
+theme_color = "blue"
+main_menu   = [
+  { url = "/",         name = "home"    },
+  { url = "/about/",   name = "about"   },
+  { url = "/contact/", name = "contact" },
+]
+
+author      = "taryn"
+show_author = false
+
+show_categories = true
+show_tags       = true

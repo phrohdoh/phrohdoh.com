@@ -1,0 +1,9 @@
+{% macro copyright() %}
+    <div class="copyright copyright--user">
+        <span>© {{ now() | date(format="%Y") }} {{ config.extra.copyright_holding_entity | safe }}</span>
+    </div>
+{% endmacro copyright %}
+
+{% macro script() %}
+    <script type="text/javascript" src="{{ get_url(path="assets/js/main.js" ) }}"></script>
+{% endmacro script %}
