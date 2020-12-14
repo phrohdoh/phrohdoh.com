@@ -18,6 +18,7 @@ build_search_index = true
 theme = "zerm"
 
 [extra] # put all your custom variables here
+favicon = "favicon.ico"
 logo_text = "phrohdoh.com"
 copyright_holding_entity = "taryn"
 
