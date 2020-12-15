@@ -1,7 +1,9 @@
 +++
 title = "sending synchronous HTTP requests in Rust"
 date = 2020-12-12
-draft = false
+
+[taxonomies]
+tags = ["rust"]
 +++
 
 You're building a proof-of-concept, not launching satellites. It should be easy

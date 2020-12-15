@@ -17,6 +17,10 @@ build_search_index = true
 # ./themes/<dir-name>
 theme = "zerm"
 
+taxonomies = [
+  { name = "tags" },
+]
+
 [extra] # put all your custom variables here
 favicon = "favicon.ico"
 logo_text = "phrohdoh.com"
