@@ -4,17 +4,16 @@ date = 2020-12-12
 draft = false
 +++
 
-I'm building a proof-of-concept, not launching satellites. It should be easy to
-send an HTTP request but [every](https://blog.logrocket.com/the-state-of-rust-http-clients/#reqwest3)
-[example](https://stackoverflow.com/a/14189088/3816796) [I see](https://blog.logrocket.com/the-state-of-rust-http-clients/#Surf5)
-is causing further confusion because of the unexplained use of `async`/`await`!
+You're building a proof-of-concept, not launching satellites. It should be easy
+to send an HTTP request but every example you see makes you more confused
+because of the unexplained use of `async`/`await`!
 
 Is using `async`/`await` _required_? If so, what exactly is requiring it?
-The library? The language? What's with the `.await?` syntax? How much do I have
-to learn before I can just get something working?! 😠
+The library? The language? What's with the `.await?` syntax? How much do you
+have to learn before you can just get something working?! 😠
 
-All of this asynchronous stuff can be confusing, so I'd rather not worry about
-it and just send synchronous requests. How can I do this?
+All of this asynchronous stuff can be confusing, so you'd rather not worry about
+it and just send synchronous requests. How can you do this?
 
 <br/>
 
