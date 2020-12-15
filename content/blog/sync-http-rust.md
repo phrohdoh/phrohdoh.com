@@ -22,8 +22,9 @@ without, the `blocking` [feature] must be enabled. Ensure the project's manifest
 (that's the _Cargo.toml_ file) contains the following.
 
 ```toml
-[dependencies]
-reqwest = { version = "^0.10", features = ["blocking"] }
+[dependencies.reqwest]
+version = "^0.10"
+features = ["blocking"]
 ```
 
 Then in the code, the request can be created and sent like so.
@@ -32,18 +33,18 @@ Then in the code, the request can be created and sent like so.
 use reqwest::blocking::Client;
 
 fn main() {
-    let request = Client::new()
-        .get("https://example.com/search_result")
-        .query(&[("sort", "name"), ("limit", "8")])
-        .bearer_auth("1q2w3e4r5t6y7u8i9o0p")
-        .header("Connection", "close");
+  let request = Client::new()
+    .get("https://example.com/search_result")
+    .query(&[("sort", "name"), ("limit", "8")])
+    .bearer_auth("1q2w3e4r5t6y7u8i9o0p")
+    .header("Connection", "close");
 
-    let result = request.send();
+  let result = request.send();
 
-    match result {
-        Ok(response) => println!("{}", response.status()),
-        Err(err) => todo!(),
-    }
+  match result {
+    Ok(response) => println!("{}", response.status()),
+    Err(err) => todo!(),
+  }
 }
 ```
 
