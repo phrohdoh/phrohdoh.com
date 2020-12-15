@@ -27,7 +27,7 @@ favicon = "favicon.ico"
 logo_text = "phrohdoh.com"
 copyright_holding_entity = "taryn"
 
-theme_color = "blue"
+theme_color = "green"
 main_menu   = [
   { url = "/",         name = "home"    },
   { url = "/about/",   name = "about"   },
