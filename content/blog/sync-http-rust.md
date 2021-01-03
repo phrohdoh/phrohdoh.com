@@ -25,7 +25,7 @@ without, the `blocking` [feature] must be enabled. Ensure the project's manifest
 
 ```toml
 [dependencies.reqwest]
-version = "^0.10"
+version = "^0.10" # latest version at time of writing
 features = ["blocking"]
 ```
 
