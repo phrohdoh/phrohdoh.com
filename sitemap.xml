@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://phrohdoh.com/</loc>
+    </url>
+    <url>
+        <loc>https://phrohdoh.com/about/</loc>
+    </url>
+    <url>
+        <loc>https://phrohdoh.com/blog/read-from-file-or-stdin-rust/</loc>
+        <lastmod>2021-01-09</lastmod>
+    </url>
+    <url>
+        <loc>https://phrohdoh.com/blog/sync-http-rust/</loc>
+        <lastmod>2020-12-12</lastmod>
+    </url>
+    <url>
+        <loc>https://phrohdoh.com/contact/</loc>
+    </url>
+    <url>
+        <loc>https://phrohdoh.com/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://phrohdoh.com/tags/</loc>
+    </url>
+    <url>
+        <loc>https://phrohdoh.com/tags/rust/</loc>
+    </url>
+</urlset>

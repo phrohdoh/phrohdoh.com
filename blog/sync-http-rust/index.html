@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>sending synchronous HTTP requests in Rust - taryn</title>
+    
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="description" content=""/>
+
+    <meta property="og:title" content="
+     -&nbsp;sending synchronous HTTP requests in Rust" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https:&#x2F;&#x2F;phrohdoh.com&#x2F;blog&#x2F;sync-http-rust&#x2F;"/>
+    <meta property="og:description" content=""/>
+    <link rel="stylesheet" href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;style.css">
+    <link rel="stylesheet" href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;color&#x2F;green.css">
+<link rel="shortcut icon" href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;favicon.ico" type="image/x-icon" /></head>
+    <body>
+        <div class="container">
+<header class="header">
+    <div class="header__inner">
+        <div class="header__logo">
+            <a href="https:&#x2F;&#x2F;phrohdoh.com">
+    <div class="logo">
+        phrohdoh.com
+    </div>
+</a>
+        </div>
+        <div class="menu-trigger">menu</div>
+    </div>
+    
+    <nav class="menu">
+        <ul class="menu__inner menu__inner--desktop">
+            
+            
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com">home</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;about">about</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;contact">contact</a>
+        </li></ul>
+
+        <ul class="menu__inner menu__inner--mobile">
+            
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com">home</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;about">about</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;contact">contact</a>
+        </li>
+        </ul>
+    </nav>
+
+    </header>
+<div class="content"><div class="post">
+        <h1 class="post-title">
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;blog&#x2F;sync-http-rust&#x2F;">sending synchronous HTTP requests in Rust</a>
+        </h1>
+        
+    <div class="post-meta">
+        <span class="post-date">2020.12.12
+                </span>
+
+        <span class="post-author"></span>
+
+        
+
+    
+    ::
+    #<a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;tags&#x2F;rust&#x2F;">rust</a>
+        
+    
+            
+        
+    </div>
+
+
+
+        
+
+        <div class="post-content">
+            <p>You're building a proof-of-concept, not launching satellites. It should be easy
+to send an HTTP request but every example you see makes you more confused
+because of the unexplained use of <code>async</code>/<code>await</code>!</p>
+<p>Is using <code>async</code>/<code>await</code> <em>required</em>? If so, what exactly is requiring it?
+The library? The language? What's with the <code>.await?</code> syntax? How much do you
+have to learn before you can just get something working?! 😠</p>
+<p>All of this asynchronous stuff can be confusing, so you'd rather not worry about
+it and just send synchronous requests. How can you do this?</p>
+<br/>
+<p>The <a href="https://docs.rs/reqwest/">reqwest</a> library can be used with or <a href="https://github.com/seanmonstar/reqwest#blocking-client">without</a> <code>async</code>/<code>await</code>. To do so
+without, the <code>blocking</code> <a href="https://doc.rust-lang.org/cargo/reference/features.html">feature</a> must be enabled. Ensure the project's manifest
+(that's the <em>Cargo.toml</em> file) contains the following.</p>
+<pre style="background-color:#191919;">
+<code class="language-toml" data-lang="toml"><span style="color:#cccccc;">[dependencies.reqwest]
+</span><span style="color:#80d500;">version </span><span style="color:#cccccc;">= </span><span style="color:#ffd700;">&quot;^0.10&quot; </span><span style="background-color:#171717;color:#616161;"># latest version at time of writing</span><span style="color:#cccccc;">
+</span><span style="color:#80d500;">features </span><span style="color:#cccccc;">= [</span><span style="color:#ffd700;">&quot;blocking&quot;</span><span style="color:#cccccc;">]
+</span></code></pre>
+<p>Then in the code, the request can be created and sent like so.</p>
+<pre style="background-color:#191919;">
+<code class="language-rust" data-lang="rust"><span style="color:#ffffff;">use </span><span style="color:#cccccc;">reqwest::blocking::Client;
+
+</span><span style="color:#80d500;">fn </span><span style="color:#ffffff;">main</span><span style="color:#cccccc;">() {
+  </span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> request </span><span style="color:#ffffff;">= </span><span style="color:#cccccc;">Client::new()
+    .</span><span style="color:#8aa6c1;">get</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;https://example.com/search_result&quot;</span><span style="color:#cccccc;">)
+    .</span><span style="color:#8aa6c1;">query</span><span style="color:#cccccc;">(</span><span style="color:#ffffff;">&amp;</span><span style="color:#cccccc;">[(</span><span style="color:#ffd700;">&quot;sort&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;name&quot;</span><span style="color:#cccccc;">), (</span><span style="color:#ffd700;">&quot;limit&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;8&quot;</span><span style="color:#cccccc;">)])
+    .</span><span style="color:#8aa6c1;">bearer_auth</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;1q2w3e4r5t6y7u8i9o0p&quot;</span><span style="color:#cccccc;">)
+    .</span><span style="color:#8aa6c1;">header</span><span style="color:#cccccc;">(</span><span style="color:#ffd700;">&quot;Connection&quot;</span><span style="color:#cccccc;">, </span><span style="color:#ffd700;">&quot;close&quot;</span><span style="color:#cccccc;">);
+
+  </span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> result </span><span style="color:#ffffff;">=</span><span style="color:#cccccc;"> request.</span><span style="color:#8aa6c1;">send</span><span style="color:#cccccc;">();
+
+  </span><span style="color:#80d500;">match</span><span style="color:#cccccc;"> result {
+    </span><span style="color:#8aa6c1;">Ok</span><span style="color:#cccccc;">(response) </span><span style="color:#ffffff;">=&gt; </span><span style="color:#cccccc;">println!(</span><span style="color:#ffd700;">&quot;</span><span style="color:#66ccff;">{}</span><span style="color:#ffd700;">&quot;</span><span style="color:#cccccc;">, response.</span><span style="color:#8aa6c1;">status</span><span style="color:#cccccc;">()),
+    </span><span style="color:#8aa6c1;">Err</span><span style="color:#cccccc;">(err) </span><span style="color:#ffffff;">=&gt; </span><span style="color:#cccccc;">todo!(),
+  }
+}
+</span></code></pre>
+        </div>
+        
+    
+</div></div>
+            
+    <div class="pagination">
+        <div class="pagination__buttons">
+            </div>
+    </div>
+<footer class="footer">
+                    <div class="footer__inner">
+    <div class="copyright copyright--user">
+        <span>© 2021 taryn</span>
+    </div>
+
+    <script type="text/javascript" src="https:&#x2F;&#x2F;phrohdoh.com&#x2F;assets&#x2F;js&#x2F;main.js"></script>
+</div>
+                    
+
+                </footer></div>
+    </body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>reading from a file or stdin in Rust - taryn</title>
+    
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="description" content=""/>
+
+    <meta property="og:title" content="
+     -&nbsp;reading from a file or stdin in Rust" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https:&#x2F;&#x2F;phrohdoh.com&#x2F;blog&#x2F;read-from-file-or-stdin-rust&#x2F;"/>
+    <meta property="og:description" content=""/>
+    <link rel="stylesheet" href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;style.css">
+    <link rel="stylesheet" href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;color&#x2F;green.css">
+<link rel="shortcut icon" href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;favicon.ico" type="image/x-icon" /></head>
+    <body>
+        <div class="container">
+<header class="header">
+    <div class="header__inner">
+        <div class="header__logo">
+            <a href="https:&#x2F;&#x2F;phrohdoh.com">
+    <div class="logo">
+        phrohdoh.com
+    </div>
+</a>
+        </div>
+        <div class="menu-trigger">menu</div>
+    </div>
+    
+    <nav class="menu">
+        <ul class="menu__inner menu__inner--desktop">
+            
+            
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com">home</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;about">about</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;contact">contact</a>
+        </li></ul>
+
+        <ul class="menu__inner menu__inner--mobile">
+            
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com">home</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;about">about</a>
+        </li>
+        <li>
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;contact">contact</a>
+        </li>
+        </ul>
+    </nav>
+
+    </header>
+<div class="content"><div class="post">
+        <h1 class="post-title">
+            <a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;blog&#x2F;read-from-file-or-stdin-rust&#x2F;">reading from a file or stdin in Rust</a>
+        </h1>
+        
+    <div class="post-meta">
+        <span class="post-date">2021.01.09
+                </span>
+
+        <span class="post-author"></span>
+
+        
+
+    
+    ::
+    #<a href="https:&#x2F;&#x2F;phrohdoh.com&#x2F;tags&#x2F;rust&#x2F;">rust</a>
+        
+    
+            
+        
+    </div>
+
+
+
+        
+
+        <div class="post-content">
+            <p>Your command-line application reads from a file path supplied by the user and in
+an effort to be maximally useful, you've decided it should have the ability to
+read from <a href="https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)">stdin</a> (when the <a href="https://unix.stackexchange.com/a/16364/355959">user provides <code>-</code> as the file path</a>).</p>
+<p>Given the following <code>path/to/file.csv</code></p>
+<pre style="background-color:#191919;">
+<code class="language-csv" data-lang="csv"><span style="color:#80d500;">date</span><span style="color:#ffffff;">,</span><span style="color:#80d500;">amount</span><span style="color:#ffffff;">,</span><span style="color:#80d500;">memo
+2020-12-14</span><span style="color:#ffffff;">,</span><span style="color:#eddd5a;">-500.00</span><span style="color:#ffffff;">,</span><span style="color:#80d500;">PS5 from Joe&#39;s Game Center
+</span></code></pre>
+<p>and either one of these invocations</p>
+<pre style="background-color:#191919;">
+<code class="language-shell" data-lang="shell"><span style="color:#ffffff;">$ ./your-program path/to/file.csv
+
+# OR
+
+$ cat path/to/file.csv | ./your-program -
+</span></code></pre>
+<p>you want to see all of the lines printed to <a href="https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdout)">stdout</a> (yep, implementing a
+<a href="https://en.wikipedia.org/wiki/Cat_(Unix)"><code>cat</code></a>-like while using <code>cat</code> in the example 🤷).</p>
+<br/>
+<p>Given both <a href="https://doc.rust-lang.org/std/io/fn.stdin.html"><code>io::stdin</code></a> and <a href="https://doc.rust-lang.org/std/fs/struct.File.html#method.open"><code>fs::File::open</code></a> return types that can be read
+from (this is known because the types (after error handing) implement <a href="https://doc.rust-lang.org/std/io/trait.Read.html"><code>io::Read</code></a>),
+you may expect to be able to do something like the following.</p>
+<pre style="background-color:#191919;">
+<code class="language-rust" data-lang="rust"><span style="color:#ffffff;">use </span><span style="color:#cccccc;">std::{env, io, fs};
+
+</span><span style="color:#80d500;">fn </span><span style="color:#ffffff;">main</span><span style="color:#cccccc;">() {
+  </span><span style="background-color:#171717;color:#616161;">// file path provided by user
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> input </span><span style="color:#ffffff;">= </span><span style="color:#cccccc;">env::args().</span><span style="color:#8aa6c1;">nth</span><span style="color:#cccccc;">(</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">).</span><span style="color:#8aa6c1;">unwrap</span><span style="color:#cccccc;">();
+
+  </span><span style="background-color:#171717;color:#616161;">// get the thing we can read from
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">let mut</span><span style="color:#cccccc;"> rdr </span><span style="color:#ffffff;">= </span><span style="color:#80d500;">match</span><span style="color:#cccccc;"> input.</span><span style="color:#8aa6c1;">as_ref</span><span style="color:#cccccc;">() {
+    </span><span style="color:#ffd700;">&quot;-&quot; </span><span style="color:#ffffff;">=&gt; </span><span style="color:#cccccc;">io::stdin(),
+    </span><span style="color:#ffffff;">_   =&gt; </span><span style="color:#cccccc;">fs::File::open(input).</span><span style="color:#8aa6c1;">unwrap</span><span style="color:#cccccc;">(),
+  };
+
+  </span><span style="background-color:#171717;color:#616161;">// write data from reader to stdout
+</span><span style="color:#cccccc;">  io::copy(</span><span style="color:#ffffff;">&amp;</span><span style="color:#80d500;">mut</span><span style="color:#cccccc;"> rdr, </span><span style="color:#ffffff;">&amp;</span><span style="color:#80d500;">mut </span><span style="color:#cccccc;">io::stdout()).</span><span style="color:#8aa6c1;">unwrap</span><span style="color:#cccccc;">();
+}
+</span></code></pre>
+<p>But this will <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=99e9de9ec3f9d45e3f2994e0aa7ea8b4">fail to compile</a>!</p>
+<pre style="background-color:#191919;">
+<code><span style="color:#ffffff;">error[E0308]: `match` arms have incompatible types
+  --&gt; src/lib.rs:10:12
+   |
+8  |     let mut rdr = match input.as_ref() {
+   |  _________________-
+9  | |     &quot;-&quot; =&gt; io::stdin(),
+   | |            ----------- this is found to be of type `Stdin`
+10 | |     _   =&gt; fs::File::open(input).unwrap(),
+   | |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected struct `Stdin`, found struct `File`
+11 | |   };
+   | |___- `match` arms have incompatible types
+
+error: aborting due to previous error
+</span></code></pre>
+<p>The compiler cannot determine the appropriate type for <code>rdr</code> since in one arm
+it is being assigned to a <code>Stdin</code> and in the other a <code>File</code>. What is needed here
+is a type that allows the post-reading code to be agnostic to the source of the
+data (file, stdin, socket, ...).</p>
+<p><a href="https://doc.rust-lang.org/stable/std/boxed/index.html"><code>Box&lt;io::Read&gt;</code></a> is this story's hero.
+3 quick changes (all <code>Box</code>-related) et voilà!</p>
+<pre style="background-color:#191919;">
+<code class="language-rust" data-lang="rust"><span style="color:#ffffff;">use </span><span style="color:#cccccc;">std::{env, io, fs};
+
+</span><span style="color:#80d500;">fn </span><span style="color:#ffffff;">main</span><span style="color:#cccccc;">() {
+  </span><span style="background-color:#171717;color:#616161;">// file path provided by user
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">let</span><span style="color:#cccccc;"> input </span><span style="color:#ffffff;">= </span><span style="color:#cccccc;">env::args().</span><span style="color:#8aa6c1;">nth</span><span style="color:#cccccc;">(</span><span style="color:#eddd5a;">1</span><span style="color:#cccccc;">).</span><span style="color:#8aa6c1;">unwrap</span><span style="color:#cccccc;">();
+
+  </span><span style="background-color:#171717;color:#616161;">// get the generic thing we can read from
+</span><span style="color:#cccccc;">  </span><span style="color:#80d500;">let mut</span><span style="color:#cccccc;"> rdr: </span><span style="color:#8aa6c1;">Box</span><span style="color:#cccccc;">&lt;io::Read&gt; </span><span style="color:#ffffff;">= </span><span style="color:#80d500;">match</span><span style="color:#cccccc;"> input {
+    </span><span style="color:#ffd700;">&quot;-&quot; </span><span style="color:#ffffff;">=&gt; </span><span style="color:#8aa6c1;">Box</span><span style="color:#cccccc;">::new(io::stdin()),
+    </span><span style="color:#ffffff;">_   =&gt; </span><span style="color:#8aa6c1;">Box</span><span style="color:#cccccc;">::new(fs::File::open(input).</span><span style="color:#8aa6c1;">unwrap</span><span style="color:#cccccc;">()),
+  };
+
+  </span><span style="background-color:#171717;color:#616161;">// write data from reader to stdout (or whatever you do with it)
+</span><span style="color:#cccccc;">  io::copy(</span><span style="color:#ffffff;">&amp;</span><span style="color:#80d500;">mut</span><span style="color:#cccccc;"> rdr, </span><span style="color:#ffffff;">&amp;</span><span style="color:#80d500;">mut </span><span style="color:#cccccc;">io::stdout()).</span><span style="color:#8aa6c1;">unwrap</span><span style="color:#cccccc;">();
+}
+</span></code></pre><!-- author self-note:
+  link final code block to explaine.rs snippet explaining type annotations
+  see https://github.com/jrvidal/explaine.rs/issues/13
+-->
+
+        </div>
+        
+    
+</div></div>
+            
+    <div class="pagination">
+        <div class="pagination__buttons">
+            </div>
+    </div>
+<footer class="footer">
+                    <div class="footer__inner">
+    <div class="copyright copyright--user">
+        <span>© 2021 taryn</span>
+    </div>
+
+    <script type="text/javascript" src="https:&#x2F;&#x2F;phrohdoh.com&#x2F;assets&#x2F;js&#x2F;main.js"></script>
+</div>
+                    
+
+                </footer></div>
+    </body>
+</html>
