@@ -19,7 +19,7 @@ it and just send synchronous requests. How can you do this?
 
 <br/>
 
-The [reqwest] library can be used with or [without] `async`/`await`. To do so
+The [reqwest] library can be used with or [without][reqwest-blocking] `async`/`await`. To do so
 without, the `blocking` [feature] must be enabled. Ensure the project's manifest
 (that's the _Cargo.toml_ file) contains the following.
 
@@ -51,5 +51,5 @@ fn main() {
 ```
 
 [reqwest]: https://docs.rs/reqwest/
-[without]: https://github.com/seanmonstar/reqwest#blocking-client
+[reqwest-blocking]: https://docs.rs/reqwest/*/reqwest/blocking/index.html
 [feature]: https://doc.rust-lang.org/cargo/reference/features.html

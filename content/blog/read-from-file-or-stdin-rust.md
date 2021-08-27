@@ -19,7 +19,7 @@ date,amount,memo
 
 and either one of these invocations
 
-```shell
+```sh
 $ ./your-program path/to/file.csv
 
 # OR
@@ -100,7 +100,7 @@ fn main() {
 
 [stdin]: https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)
 [stdin-dash-convention]: https://unix.stackexchange.com/a/16364/355959
-[stdout]: https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdout)
+[stdout]: https://en.wikipedia.org/wiki/Standard_streams#Standard_output_(stdout)
 [`cat`]: https://en.wikipedia.org/wiki/Cat_(Unix)
 [`io::stdin`]: https://doc.rust-lang.org/std/io/fn.stdin.html
 [`fs::File::open`]: https://doc.rust-lang.org/std/fs/struct.File.html#method.open
